@@ -101,9 +101,6 @@
 
 - (void)reloadData {
     
-    //释放计时器
-    [self releaseTimer];
-    
     //布局Cell
     [self layoutCurrentCellAndWillShowCell];
     
@@ -136,6 +133,7 @@
 
 ///释放计时器
 - (void)releaseTimer {
+    dispatch_source_cancel(_timer);
     _isAnimating = NO;
     _currentIndex = 0;
     [_currentCell removeFromSuperview];
@@ -236,7 +234,7 @@
         NSLog(@"%p %d %s",self,__LINE__,__func__);
     }
     
-    //还原
+    //释放timer
     [self releaseTimer];
 }
 

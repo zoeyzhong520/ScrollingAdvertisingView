@@ -28,6 +28,10 @@
     [self.scrollAdvertisingView reloadData];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [self.scrollAdvertisingView releaseTimer];
+}
+
 #pragma mark - ScrollingAdvertisingViewDelegate,ScrollingAdvertisingViewDataSource
 - (NSInteger)numberOfRowsForScrollingAdvertisingView:(ScrollingAdvertisingView *)scrollingAdvertising {
     return self.dataArray.count;
