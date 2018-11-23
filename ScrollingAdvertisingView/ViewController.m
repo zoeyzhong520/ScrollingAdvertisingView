@@ -25,10 +25,13 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self.view addSubview:self.scrollAdvertisingView];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
     [self.scrollAdvertisingView reloadData];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewDidDisappear:(BOOL)animated {
     [self.scrollAdvertisingView releaseTimer];
 }
 
@@ -54,6 +57,7 @@
 - (ScrollingAdvertisingView *)scrollAdvertisingView {
     if (!_scrollAdvertisingView) {
         _scrollAdvertisingView = [[ScrollingAdvertisingView alloc] initWithFrame:CGRectMake(15, ([UIScreen mainScreen].bounds.size.height-120)/2, [UIScreen mainScreen].bounds.size.width - 30, 60)];
+        _scrollAdvertisingView.AllowDebug = YES;
         _scrollAdvertisingView.delegate = self;
         _scrollAdvertisingView.dataSource = self;
         [_scrollAdvertisingView registerClass:[ScrollingAdvertisingCell class] forCellReuseIdentifier:@"cellID"];

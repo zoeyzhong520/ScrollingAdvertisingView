@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSTimeInterval rollingInterval;
 ///当前滚动到的位置
 @property (nonatomic, assign, readonly) NSInteger currentIndex;
+///是否打开调试信息
+@property (nonatomic, assign) BOOL AllowDebug;
 
 ///使用ReuseIdentifier注册Cell
 - (void)registerClass:(Class)cellClass forCellReuseIdentifier:(NSString *)identifier;

@@ -22,6 +22,8 @@
 @property (nonatomic, assign) BOOL isAnimating;
 ///计时器
 @property (nonatomic, strong) dispatch_source_t timer;
+///是否延迟加载计时器
+@property (nonatomic, assign) BOOL isTimerLazy;
 
 @end
 
@@ -110,8 +112,10 @@
         return;
     }
     
-    //开启计时器
-    [self startTimer];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(NSEC_PER_SEC * (_isTimerLazy ? _rollingInterval : 0))), dispatch_get_main_queue(), ^{
+        //开启计时器
+        [self startTimer];
+    });
 }
 
 ///开启计时器
@@ -129,16 +133,6 @@
         });
     });
     dispatch_resume(_timer);
-}
-
-///释放计时器
-- (void)releaseTimer {
-    dispatch_source_cancel(_timer);
-    _isAnimating = NO;
-    _currentIndex = 0;
-    [_currentCell removeFromSuperview];
-    [_willShowCell removeFromSuperview];
-    [self.reuseCells removeAllObjects];
 }
 
 ///计时器操作
@@ -166,8 +160,19 @@
             [self.currentCell removeFromSuperview];
             self.currentCell = self.willShowCell;
         }
+        
         self.isAnimating = NO;
     }];
+}
+
+///释放计时器
+- (void)releaseTimer {
+    dispatch_source_cancel(_timer);
+    _isAnimating = NO;
+    _currentIndex = 0;
+    [_currentCell removeFromSuperview];
+    [_willShowCell removeFromSuperview];
+    [self.reuseCells removeAllObjects];
 }
 
 ///配置当前Cell、将要显示Cell
@@ -192,16 +197,21 @@
         _currentCell = [self.dataSource scrollingAdvertising:self cellAtIndex:_currentIndex];
         _currentCell.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
         [self addSubview:_currentCell];
+        //延迟加载计时器（修复滚动广告创建后迅速滚动至第二屏问题）
+        _isTimerLazy = YES;
         return;
     }
+    
+    //正常加载计时器
+    _isTimerLazy = NO;
     
     _willShowCell = [self.dataSource scrollingAdvertising:self cellAtIndex:willShowIndex];
     _willShowCell.frame = CGRectMake(0, self.bounds.size.height, self.bounds.size.width, self.bounds.size.height);
     [self addSubview:_willShowCell];
  
-    if (AllowScrollingAdvertisingDebug) {
-        NSLog(@"_currentCell  %p", _currentCell);
-        NSLog(@"_willShowCell %p", _willShowCell);
+    if (_AllowDebug) {
+//        NSLog(@"_currentCell  %p", _currentCell);
+//        NSLog(@"_willShowCell %p", _willShowCell);
     }
     
     //移除Cell
@@ -230,7 +240,7 @@
 
 - (void)dealloc
 {
-    if (AllowScrollingAdvertisingDebug) {
+    if (_AllowDebug) {
         NSLog(@"%p %d %s",self,__LINE__,__func__);
     }
     

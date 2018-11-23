@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 ///是否打开调试信息
-static BOOL AllowScrollingAdvertisingDebug = YES;
+static BOOL AllowScrollingAdvertisingDebug = NO;
 
 @interface ScrollingAdvertisingCell : UIView
 
